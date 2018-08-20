@@ -4,31 +4,47 @@
 from selenium import webdriver
 import sys
 import time
+import csv
 
-userid = "7204472798"
-passwd = "3JrogtdpEgGWBNm@"
-url    = "https://ut-ppsweb.adm.u-tokyo.ac.jp/cws/srwtimerec"
+def readConfig( filepath ):
 
-driver = webdriver.Chrome("/mnt/data/trusty/home/sktometometo/Projects/autoworker/chromedriver")
-driver.get(url)
+    with open( filepath, "r" ) as f:
+        dict_config = {}
+        reader = csv.reader( f, delimiter="," )
+        for row in enumerate(reader):
+            dict_config[row[1][0]] = row[1][1]
+        return dict_config["userid"], \
+               dict_config["passwd"], \
+               dict_config["url"], \
+               dict_config["pathdrv"]
 
-time.sleep(1)
+def main():
 
-form_id = driver.find_element_by_name('user_id')
-form_pw = driver.find_element_by_name('password')
+    userid, passwd, url, pathdrv = readConfig("./config.csv")
 
-time.sleep(1)
+    driver = webdriver.Chrome( pathdrv )
+    driver.get(url)
 
-form_id.send_keys(userid)
-form_pw.send_keys(passwd)
+    time.sleep(1)
 
-time.sleep(1)
+    form_id = driver.find_element_by_name('user_id')
+    form_pw = driver.find_element_by_name('password')
 
-driver.find_element_by_name('syussya').click()
-#driver.find_element_by_name('taisya').click()
+    time.sleep(1)
 
-time.sleep(1)
+    form_id.send_keys(userid)
+    form_pw.send_keys(passwd)
 
-driver.close()
+    time.sleep(1)
 
-sys.exit(0)
+    driver.find_element_by_name('syussya').click()
+    #driver.find_element_by_name('taisya').click()
+
+    time.sleep(1)
+
+    driver.close()
+
+    sys.exit(0)
+
+if __name__ == "__main__":
+    main()
