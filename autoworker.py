@@ -196,4 +196,8 @@ filepath_config   = os.path.abspath("./config.csv")
 filepath_log      = os.path.abspath("./autoworker.log")
 
 if __name__ == "__main__":
+    if len( sys.argv ) < 2:
+        print("usage: program <log file> <(optional) config csv> <(optional) schedule csv>")
+        sys.exit()
+    filepath_log = os.path.abspath(sys.argv[1])
     main()
