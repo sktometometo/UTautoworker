@@ -118,6 +118,9 @@ def autoworker( worktype ):
         driver.close()
         display.stop()
         debugprint( "INFO", "autoworker() exit" )
+
+        if worktype != "go":
+            del list_schedhandler[0] # 退社時 handler の消去
     except:
         debugprint( "ERROR", "autoworker() exit. Unexpected error." )
         raise
