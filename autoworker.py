@@ -22,8 +22,7 @@ def debugprint( level, string_msg ):
     """
     level_list = [ "INFO", "WARNING", "ERROR", "DEBUG" ]
     if level in level_list:
-        with open( filepath_log, "a" ) as f:
-            print( str( datetime.datetime.now() ) + " : " + level + " : " + string_msg, file=f )
+        print( str( datetime.datetime.now() ) + " : " + level + " : " + string_msg, file=f )
 
 def readSchedule( filepath ):
     """
@@ -223,7 +222,6 @@ def main():
 is_debug = True
 filepath_schedule = os.path.abspath("./schedule.csv")
 filepath_config   = os.path.abspath("./config.csv")
-filepath_log      = os.path.abspath("./autoworker.log")
 list_schedhandler = []
 #schedule_obj = None
 schedule_obj  = sched.scheduler( time.time, time.sleep )
@@ -232,5 +230,4 @@ if __name__ == "__main__":
     if len( sys.argv ) < 2:
         print("usage: program <log file> <(optional) config csv> <(optional) schedule csv>")
         sys.exit()
-    filepath_log = os.path.abspath(sys.argv[1])
     main()
