@@ -16,13 +16,23 @@ import sched
 import datetime
 import threading
 
-def debugprint( level, string_msg ):
+def debugPrint( level, string_msg ):
     """
     標準出力へ時刻とメッセージを出力
     """
     level_list = [ "INFO", "WARNING", "ERROR", "DEBUG" ]
     if level in level_list:
-        print( str( datetime.datetime.now() ) + " : " + level + " : " + string_msg, file=f )
+        print( str( datetime.datetime.now() ) 
+                  + " : " 
+                  + level 
+                  + " : " 
+                  + string_msg )
+    else:
+        print( str( datetime.datetime.now() ) 
+                  + " : " 
+                  + "ERROR" 
+                  + " : " 
+                  + "Recieved unknown log level in debugPrint()" )
 
 def readSchedule( filepath ):
     """
@@ -39,13 +49,13 @@ def readSchedule( filepath ):
                     int(row[0]), int(row[1]), int(row[2]), int(row[3]), int(row[4]) \
                 ] )
         for schedule in list_schedule:
-            debugprint( "INFO", "readSchedule(), schedule:" + str(schedule) )
-        debugprint( "INFO", "readSchedule() succeeded" ) 
+            debugPrint( "INFO", "readSchedule(), schedule:" + str(schedule) )
+        debugPrint( "INFO", "readSchedule() succeeded" ) 
         return list_schedule
     except ( IndexError, ValueError ):
-        debugprint( "ERROR", "readSchedule() failed. config file syntax error" )
+        debugPrint( "ERROR", "readSchedule() failed. config file syntax error" )
     except:
-        debugprint( "ERROR", "readSchedule() failed. Unexpected error." ) 
+        debugPrint( "ERROR", "readSchedule() failed. Unexpected error." ) 
         raise
 
 def readConfig( filepath ):
@@ -58,36 +68,38 @@ def readConfig( filepath ):
             reader = csv.reader( f, delimiter="," )
             for row in reader:
                 dict_config[row[0]] = row[1]
-        debugprint( "INFO", "readConfig() succeeded." )
+        debugPrint( "INFO", "readConfig() succeeded." )
         return dict_config["userid"], \
                dict_config["passwd"], \
                dict_config["url"], \
                dict_config["pathdrv"]
     except ( IndexError, ValueError ):
-        debugprint( "ERROR", "readConfig() failed. config file syntax error" )
+        debugPrint( "ERROR", "readConfig() failed. config file syntax error" )
     except:
-        debugprint( "ERROR", "readConfig() failed. Unexpected error." ) 
+        debugPrint( "ERROR", "readConfig() failed. Unexpected error." ) 
         raise
 
 def autoworker( worktype ):
     """
     """
+
     print( "autoworker is working. worktype = " + worktype )
+
     try:
         # 仮想ディスプレイ
         display = Display( visible=0, size=(1024,768) )
         display.start()
-        debugprint( "INFO", "in autoworker(), virtual display has been opened." )
+        debugPrint( "INFO", "in autoworker(), virtual display has been opened." )
 
         # 設定ファイル読み込み
         userid, passwd, url, pathdrv = readConfig("./config.csv")
-        debugprint( "INFO", "in autoworker(), config file has been read." )
+        debugPrint( "INFO", "in autoworker(), config file has been read." )
 
         # chrome を開いて, 打刻ページを開く
         driver = webdriver.Chrome( pathdrv )
         driver.get(url)
         time.sleep(1)
-        debugprint( "INFO", "in autoworker(), chrome has been run." )
+        debugPrint( "INFO", "in autoworker(), chrome has been run." )
 
         # フォームへの認証情報入力
         form_id = driver.find_element_by_name('user_id')
@@ -95,7 +107,7 @@ def autoworker( worktype ):
         form_id.send_keys(userid)
         form_pw.send_keys(passwd)
         time.sleep(1)
-        debugprint( "INFO", "in autoworker(), form has been filt." )
+        debugPrint( "INFO", "in autoworker(), form has been filt." )
 
         # ボタンのクリック
         if worktype == "go":
@@ -103,32 +115,32 @@ def autoworker( worktype ):
         else:
             driver.find_element_by_name('taisya').click()
         time.sleep(1)
-        debugprint( "INFO", "in autoworker(), button has been clicked." )
+        debugPrint( "INFO", "in autoworker(), button has been clicked." )
 
         # 成否判定
         try:
             driver.find_element_by_name("user_id")
         except:
-            debugprint( "ERROR", "in autoworker(), " + str( worktype ) + "has failed." )
+            debugPrint( "ERROR", "in autoworker(), " + str( worktype ) + "has failed." )
         else:
-            debugprint( "INFO", "in autoworker(), " + str( worktype ) + "has succeed." )
+            debugPrint( "INFO", "in autoworker(), " + str( worktype ) + "has succeed." )
 
         # chromeを閉じて, 仮想ディスプレイを消去
         driver.close()
         display.stop()
-        debugprint( "INFO", "autoworker() exit" )
+        debugPrint( "INFO", "autoworker() exit" )
 
         if worktype != "go":
             del list_schedhandler[0] # 退社時 handler の消去
     except:
-        debugprint( "ERROR", "autoworker() exit. Unexpected error." )
+        debugPrint( "ERROR", "autoworker() exit. Unexpected error." )
         raise
 
 def schedule():
     """
     """
     try:
-        debugprint( "INFO", "schedule(), started.")
+        debugPrint( "INFO", "schedule(), started.")
         list_schedule = readSchedule( filepath_schedule )
 
         today = datetime.datetime.now()
@@ -137,7 +149,7 @@ def schedule():
         list_syussya_nextmonth, list_taisya_nextmonth = createSchedulesInMonth( nextmonthday.year, nextmonthday.month, list_schedule )
         list_syussya.extend( list_syussya_nextmonth )
         list_taisya.extend(  list_taisya_nextmonth )
-        debugprint( "INFO", "schedule() has got schedules" )
+        debugPrint( "INFO", "schedule() has got schedules" )
         
         #schedule_obj  = sched.scheduler( time.time, time.sleep )
 
@@ -155,19 +167,19 @@ def schedule():
             list_schedhandler.append( [[datetime_syussya,handler_syussya],[datetime_taisya,handler_taisya]] )
         
         if not is_debug:
-            debugprint( "INFO", "schedule() run" )
+            debugPrint( "INFO", "schedule() run" )
             schedule_obj.run()
         else:
-            debugprint( "DEBUG", "schdule(), debug, not run" )
+            debugPrint( "DEBUG", "schdule(), debug, not run" )
             for i, ( time_syussya, time_taisya ) in enumerate( zip( list_syussya, list_taisya ) ):
-                debugprint( "DEBUG", "schedule(), syussya, " + str( time_syussya ) )
-                debugprint( "DEBUG", "schedule(), taisya,  " + str( time_taisya ) )
+                debugPrint( "DEBUG", "schedule(), syussya, " + str( time_syussya ) )
+                debugPrint( "DEBUG", "schedule(), taisya,  " + str( time_taisya ) )
 
     except:
-        debugprint( "ERROR", "schedule(), got unexpected error." )
+        debugPrint( "ERROR", "schedule(), got unexpected error." )
         raise
     else:
-        debugprint( "INFO", "schedule(), finish." )
+        debugPrint( "INFO", "schedule(), finish." )
 
 def createSchedulesInMonth( year, month, list_schedule ):
     """
@@ -192,7 +204,7 @@ def createSchedulesInMonth( year, month, list_schedule ):
     return list_syussya, list_taisya
 
 def main():
-    debugprint( "INFO", "main(), start of program." )
+    debugPrint( "INFO", "main(), start of program." )
     print("started time:" + str( datetime.datetime.now() ) )
     thread_obj = threading.Thread( target=schedule, daemon=True )
     thread_obj.start()
@@ -202,7 +214,7 @@ def main():
         print(" \"cancel\" and press enter to cancel a schedule. ")
         inputline = input("Input > ")
         if inputline == "stop":
-            debugprint( "INFO", "main(), stop of program" )
+            debugPrint( "INFO", "main(), stop of program" )
             sys.exit()
         elif inputline == "list": 
             print("schedules:")
