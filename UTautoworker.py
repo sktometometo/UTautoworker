@@ -85,13 +85,13 @@ class UTautoworker(object):
                       + " : " 
                       + level 
                       + " : " 
-                      + string_msg, file=self.debugOutput )
+                      + string_msg, file=self.debugOutput, flush=True )
         else:
             print( str( datetime.datetime.now() ) 
                       + " : " 
                       + "ERROR" 
                       + " : " 
-                      + "Recieved unknown log level in debugPrint()", file=self.debugOutput )
+                      + "Recieved unknown log level in debugPrint()", file=self.debugOutput, flush=True )
 
     def loadConfig( self, filepath_config ):
         """
@@ -241,6 +241,7 @@ class UTautoworker(object):
         """
         list_schedhandler = [ x + ["syussya"] for x in self.list_schedhandler_syussya ] \
                           + [ x + ["taisya"]  for x in self.list_schedhandler_taisya ]
+        list_schedhandler.sort( key=lambda x: x[0] )
         targetschedhandler = list_schedhandler[index]
         eventID = targetschedhandler[1]
 
@@ -376,7 +377,8 @@ if __name__ == "__main__":
         print("debug mode")
         hoge = UTautoworker( args.filepath_config, args.filepath_schedule, args.filepath_firefoxdriver, isDebug=True, debugOutput=sys.stdout )
     else:
-        hoge = UTautoworker( args.filepath_config, args.filepath_schedule, args.filepath_firefoxdriver, isDebug=False, debugOutput=None )
+        f = open( os.path.dirname( os.path.abspath(__file__) ) + "/debug.log", mode="w" )
+        hoge = UTautoworker( args.filepath_config, args.filepath_schedule, args.filepath_firefoxdriver, isDebug=False, debugOutput=f )
     hoge.initSchedulerUntilMonth( args.year, args.month )
 
     list_schedhandler = [ x + ["syussya"] for x in hoge.list_schedhandler_syussya ] \
