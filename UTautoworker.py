@@ -164,13 +164,35 @@ class UTautoworker(object):
 
         return list_syussya, list_taisya
 
+    def initSchedulerUntilMonth( self, year, month ):
+        """
+        """
+        self.debugPrint( "INFO", "initSchedulerUntilMonth started" )
+        today = datetime.datetime.now()
+        startyear = today.year
+        startmonth = today.month
+        endyear = year
+        endmonth = month
+        
+        while True:
+            if startyear > endyear:
+                break
+            elif startyear == endyear and startmonth > endmonth:
+                break
+
+            self.initScheduler( startyear, startmonth )
+
+            startmonth += 1
+            if startmonth >= 13:
+                startmonth = 1
+                startyear += 1
+
     def initScheduler( self, year, month ):
         """
         """
         self.debugPrint( "INFO","initScheduler() started" )
 
-        today = datetime.datetime.now()
-        list_syussya, list_taisya = self.createSchedules( today.year, today.month )
+        list_syussya, list_taisya = self.createSchedules( year, month )
 
         time_margin_insec = 5
         time_margin_range_min =  1 * 60 / time_margin_insec #  1 min
@@ -237,6 +259,12 @@ class UTautoworker(object):
 
             self.debugPrint( "INFO", "autoworker runnnig in debug mode, worktype:{}, worktime{}".format( worktype, worktime ) )
 
+            if worktime in [ x[0] for x in self.list_schedhandler_syussya ]:
+                del self.list_schedhandler_syussya[ [ x[0] for x in self.list_schedhandler_syussya ].index(worktime) ]
+
+            if worktime in [ x[0] for x in self.list_schedhandler_taisya ]:
+                del self.list_schedhandler_taisya[ [ x[0] for x in self.list_schedhandler_taisya ].index(worktime) ]
+
             return
 
         # 仮想ディスプレイ
@@ -297,11 +325,10 @@ class UTautoworker(object):
         """
         schedule_obj.run()
 
-    def spin( self, year, month ):
+    def spin( self ):
         """
         """
         # thread_obj = threading.Thread( target=schedule, daemon=True )
-        self.initScheduler( year, month )
         self.processthread = threading.Thread( target=self.process, daemon=True )
 
         while True:
@@ -339,4 +366,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     hoge = UTautoworker( args.filepath_config, args.filepath_schedule, args.filepath_firefoxdriver, isDebug=False )
-    hoge.spin( args.year, args.month )
+    hoge.initSchedulerUntilMonth( args.year, args.month )
+    hoge.spin()
