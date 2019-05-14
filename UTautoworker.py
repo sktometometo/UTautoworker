@@ -214,7 +214,7 @@ class UTautoworker(object):
             datetime_taisya  = datetime.datetime.fromtimestamp( time_taisya )
 
             handler_syussya = \
-                self.scheduler.enterabs( time_syussya, 2*index + 1, self.autoworker, ("go",datetime_syussya,) )
+                self.scheduler.enterabs( time_syussya, 2*index + 1, self.autoworker, ("syussya",datetime_syussya,) )
             handler_taisya  = \
                 self.scheduler.enterabs( time_taisya,  2*index + 2, self.autoworker, ("taisya",datetime_taisya,) )
 
