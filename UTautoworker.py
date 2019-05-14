@@ -56,7 +56,7 @@ class UTautoworker(object):
         self.filepath_firefoxdriver = filepath_firefoxdriver
 
         self.isDebug = isDebug
-        self.debugOutput = sys.stdout
+        self.debugOutput = debugOutput
 
         self.scheduler = sched.scheduler( time.time, time.sleep )
         self.list_schedhandler_syussya = []
@@ -76,6 +76,9 @@ class UTautoworker(object):
         """
         標準出力へ時刻とメッセージを出力
         """
+        if self.debugOutput is None:
+            return
+
         level_list = [ "INFO", "WARNING", "ERROR", "DEBUG" ]
         if level in level_list:
             print( str( datetime.datetime.now() ) 
@@ -363,8 +366,14 @@ if __name__ == "__main__":
     parser.add_argument( "year",  type=int, help="year you set on UT autoworker" )
     parser.add_argument( "month", type=int, help="month you ser on UT autoworker" )
 
+    parser.add_argument( "-d", "--debug", help="turn debug mode on", action="store_true" )
+
     args = parser.parse_args()
 
-    hoge = UTautoworker( args.filepath_config, args.filepath_schedule, args.filepath_firefoxdriver, isDebug=False )
+    if args.debug:
+        print("debug mode")
+        hoge = UTautoworker( args.filepath_config, args.filepath_schedule, args.filepath_firefoxdriver, isDebug=True, debugOutput=sys.stdout )
+    else:
+        hoge = UTautoworker( args.filepath_config, args.filepath_schedule, args.filepath_firefoxdriver, isDebug=False, debugOutput=None )
     hoge.initSchedulerUntilMonth( args.year, args.month )
     hoge.spin()
