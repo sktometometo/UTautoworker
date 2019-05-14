@@ -326,13 +326,15 @@ class UTautoworker(object):
     def process( self ):
         """
         """
-        schedule_obj.run()
+        self.debugPrint( "INFO", "process() thread started." )
+        self.scheduler.run()
 
     def spin( self ):
         """
         """
         # thread_obj = threading.Thread( target=schedule, daemon=True )
         self.processthread = threading.Thread( target=self.process, daemon=True )
+        self.processthread.start()
 
         while True:
             print(" \"stop\" and press enter to stop program. ")
@@ -376,4 +378,16 @@ if __name__ == "__main__":
     else:
         hoge = UTautoworker( args.filepath_config, args.filepath_schedule, args.filepath_firefoxdriver, isDebug=False, debugOutput=None )
     hoge.initSchedulerUntilMonth( args.year, args.month )
+
+    list_schedhandler = [ x + ["syussya"] for x in hoge.list_schedhandler_syussya ] \
+                      + [ x + ["taisya"]  for x in hoge.list_schedhandler_taisya ]
+    list_schedhandler.sort( key=lambda x: x[0] )
+    for schedhandler in list_schedhandler:
+        if schedhandler[0] < datetime.datetime.now():
+            hoge.scheduler.cancel( schedhandler[1] )    
+            if schedhandler[0] in [ x[0] for x in hoge.list_schedhandler_syussya ]:
+                del hoge.list_schedhandler_syussya[ [ x[0] for x in hoge.list_schedhandler_syussya ].index( schedhandler[0] ) ]
+            if schedhandler[0] in [ x[0] for x in hoge.list_schedhandler_taisya ]:
+                del hoge.list_schedhandler_taisya[ [ x[0] for x in hoge.list_schedhandler_taisya ].index( schedhandler[0] ) ]
+
     hoge.spin()
