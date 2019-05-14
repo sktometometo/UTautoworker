@@ -49,10 +49,11 @@ class Schedule(object):
 
 class UTautoworker(object):
 
-    def __init__( self, filepath_config, filepath_schedule, isDebug=False, debugOutput=sys.stdout ):
+    def __init__( self, filepath_config, filepath_schedule, filepath_firefoxdriver, isDebug=False, debugOutput=sys.stdout ):
 
         self.filepath_config = filepath_config
         self.filepath_schedule = filepath_schedule
+        self.filepath_firefoxdriver = filepath_firefoxdriver
 
         self.isDebug = True
         self.debugOutput = sys.stdout
@@ -100,8 +101,7 @@ class UTautoworker(object):
         self.debugPrint( "INFO", "readConfig() succeeded." )
         return dict_config["userid"], \
                dict_config["passwd"], \
-               dict_config["url"], \
-               dict_config["pathdrv"]
+               dict_config["url"]
 
     def loadWeeklySchedules( self, filepath_schedule ):
         """
@@ -245,14 +245,14 @@ class UTautoworker(object):
         self.debugPrint( "INFO", "in autoworker(), virtual display has been opened." )
 
         # 設定ファイル読み込み
-        userid, passwd, url, pathdrv = self.loadConfig( self.filepath_config )
+        userid, passwd, url = self.loadConfig( self.filepath_config )
         self.debugPrint( "INFO", "in autoworker(), config file has been read." )
 
-        # chrome を開いて, 打刻ページを開く
-        driver = webdriver.Chrome( pathdrv )
+        # Firefox を開いて, 打刻ページを開く
+        driver = webdriver.Firefox( self.filepath_firefoxdriver )
         driver.get(url)
         time.sleep(1)
-        self.debugPrint( "INFO", "in autoworker(), chrome has been run." )
+        self.debugPrint( "INFO", "in autoworker(), firefox has been run." )
 
         # フォームへの認証情報入力
         form_id = driver.find_element_by_name('user_id')
@@ -265,8 +265,10 @@ class UTautoworker(object):
         # ボタンのクリック
         if worktype == "syussya":
             driver.find_element_by_name('syussya').click()
-        else:
+        elif worktype == "taisya":
             driver.find_element_by_name('taisya').click()
+        else:
+            self.debugPrint( "INFO", "in autoworker(), unknown worktype received." )
         time.sleep(1)
         self.debugPrint( "INFO", "in autoworker(), button has been clicked." )
 
@@ -330,10 +332,11 @@ if __name__ == "__main__":
 
     parser.add_argument( "filepath_config", help="filepath to config csv file" )
     parser.add_argument( "filepath_schedule", help="filepath to schedule csv file" )
+    parser.add_argument( "filepath_firefoxdriver", help="filepath to selenium firefox driver" )
     parser.add_argument( "year",  type=int, help="year you set on UT autoworker" )
     parser.add_argument( "month", type=int, help="month you ser on UT autoworker" )
 
     args = parser.parse_args()
 
-    hoge = UTautoworker( args.filepath_config, args.filepath_schedule, isDebug=True )
+    hoge = UTautoworker( args.filepath_config, args.filepath_schedule, args,filepath_firefoxdriver, isDebug=False )
     hoge.spin( args.year, args.month )
