@@ -55,7 +55,7 @@ class UTautoworker(object):
         self.filepath_schedule = filepath_schedule
         self.filepath_firefoxdriver = filepath_firefoxdriver
 
-        self.isDebug = True
+        self.isDebug = isDebug
         self.debugOutput = sys.stdout
 
         self.scheduler = sched.scheduler( time.time, time.sleep )
@@ -338,5 +338,5 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    hoge = UTautoworker( args.filepath_config, args.filepath_schedule, args,filepath_firefoxdriver, isDebug=False )
+    hoge = UTautoworker( args.filepath_config, args.filepath_schedule, args.filepath_firefoxdriver, isDebug=False )
     hoge.spin( args.year, args.month )
