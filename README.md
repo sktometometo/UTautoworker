@@ -5,6 +5,7 @@ This is a
 # Requirements
 
 - Firefox
+- Xvfb
 - Python3
 - Selenium
 - pyvirtualdisplay
