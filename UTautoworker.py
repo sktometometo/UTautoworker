@@ -49,11 +49,11 @@ class Schedule(object):
 
 class UTautoworker(object):
 
-    def __init__( self, filepath_config, filepath_schedule, filepath_firefoxdriver, isDebug=False, debugOutput=sys.stdout ):
+    def __init__( self, filepath_config, filepath_schedule, filepath_chromedriver, isDebug=False, debugOutput=sys.stdout ):
 
         self.filepath_config = filepath_config
         self.filepath_schedule = filepath_schedule
-        self.filepath_firefoxdriver = filepath_firefoxdriver
+        self.filepath_chromedriver = filepath_chromedriver
 
         self.isDebug = isDebug
         self.debugOutput = debugOutput
@@ -280,11 +280,11 @@ class UTautoworker(object):
         userid, passwd, url = self.loadConfig( self.filepath_config )
         self.debugPrint( "INFO", "in autoworker(), config file has been read." )
 
-        # Firefox を開いて, 打刻ページを開く
-        driver = webdriver.Firefox( self.filepath_firefoxdriver )
+        # chrome を開いて, 打刻ページを開く
+        driver = webdriver.Chrome( self.filepath_chromedriver )
         driver.get(url)
         time.sleep(1)
-        self.debugPrint( "INFO", "in autoworker(), firefox has been run." )
+        self.debugPrint( "INFO", "in autoworker(), chrome has been run." )
 
         # フォームへの認証情報入力
         form_id = driver.find_element_by_name('user_id')
@@ -365,7 +365,7 @@ if __name__ == "__main__":
 
     parser.add_argument( "filepath_config", help="filepath to config csv file" )
     parser.add_argument( "filepath_schedule", help="filepath to schedule csv file" )
-    parser.add_argument( "filepath_firefoxdriver", help="filepath to selenium firefox driver" )
+    parser.add_argument( "filepath_chromedriver", help="filepath to selenium chrome driver" )
     parser.add_argument( "year",  type=int, help="year you set on UT autoworker" )
     parser.add_argument( "month", type=int, help="month you ser on UT autoworker" )
 
@@ -375,10 +375,10 @@ if __name__ == "__main__":
 
     if args.debug:
         print("debug mode")
-        hoge = UTautoworker( args.filepath_config, args.filepath_schedule, args.filepath_firefoxdriver, isDebug=True, debugOutput=sys.stdout )
+        hoge = UTautoworker( args.filepath_config, args.filepath_schedule, args.filepath_chromedriver, isDebug=True, debugOutput=sys.stdout )
     else:
         f = open( os.path.dirname( os.path.abspath(__file__) ) + "/debug.log", mode="w" )
-        hoge = UTautoworker( args.filepath_config, args.filepath_schedule, args.filepath_firefoxdriver, isDebug=False, debugOutput=f )
+        hoge = UTautoworker( args.filepath_config, args.filepath_schedule, args.filepath_chromedriver, isDebug=False, debugOutput=f )
     hoge.initSchedulerUntilMonth( args.year, args.month )
 
     list_schedhandler = [ x + ["syussya"] for x in hoge.list_schedhandler_syussya ] \
