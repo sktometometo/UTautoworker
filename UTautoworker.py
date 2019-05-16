@@ -329,11 +329,11 @@ class UTautoworker(object):
         """
         self.debugPrint( "INFO", "process() thread started." )
         self.scheduler.run()
+        self.debugPrint( "ERROR", "process() thread finished unexpectedly." )
 
     def spin( self ):
         """
         """
-        # thread_obj = threading.Thread( target=schedule, daemon=True )
         self.processthread = threading.Thread( target=self.process, daemon=True )
         self.processthread.start()
 
