@@ -14,13 +14,7 @@
 # Usage
 
 ## Selenium configuration
-Download [chrome webdriver](http://chromedriver.chromium.org/downloads) and put it in the UTautoworker directory.
-
-```
-$ cd <UT autoworker directory>
-$ wget https://chromedriver.storage.googleapis.com/75.0.3770.8/chromedriver_linux64.zip
-$ unzip chromedriver_linux64.zip
-```
+Download appropriate version of [chrome webdriver](http://chromedriver.chromium.org/downloads) and put it in the UTautoworker directory.
 
 ## configuration file editing
 Open config.csv and replace "test" string with your account information and the URL of shuttaikin page.
