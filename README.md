@@ -1,6 +1,7 @@
 # UT autoworker
 
-This is a 
+技術補佐員やっていると,出勤退勤のボタンを押すの面倒でしょ?
+そこでこのスクリプトを使うと.....
 
 # Requirements
 
